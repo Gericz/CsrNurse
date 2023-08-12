@@ -5,6 +5,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use common\models\Linen;
+use kartik\select2\Select2;
+
 
 /** @var yii\web\View $this */
 /** @var common\models\Brlst $model */
@@ -21,7 +23,11 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
     <?php $form = ActiveForm::begin(); ?>
       <?= $form->field($model, 'enccode')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'patient')->textInput(['maxlength' => true]) ?>
+    <!-- $form->field($model, 'patient')->textInput(['maxlength' => true]) -->
+    <?= $form->field($model, 'patient')->textInput([
+    'maxlength' => true,
+    'value' => $patlast . ' ' . $patfirst . ' ' . $patmiddle,
+]) ?>
 
     <?= $form->field($model, 'dateadmitted')->textInput(['maxlength' => true]) ?>
 

@@ -78,46 +78,42 @@ class DefaultController extends Controller
      * @return string|\yii\web\Response
      */
     public function actionCreate()
-    {
-        if (Yii::$app->user->can('create-request')) {
-            $model = new Brlst();
-            
-            if ($this->request->isPost) {
-                if ($model->load($this->request->post()) && $model->save()) {
-                    return $this->redirect(['view', 'brlst_id' => $model->brlst_id]);
-                }
-            } else {
-                $model->loadDefaultValues();
-            }
-            
-            // Fetch data from remote columns
-            $remoteConnection = Yii::$app->db2;
-            $remoteQuery = $remoteConnection->createCommand('
+{
+    if (Yii::$app->user->can('create-request')) {
+        $model = new Brlst();
+        
+        // Fetch data from remote columns
+        $remoteConnection = Yii::$app->db2;
+        $remoteQuery = $remoteConnection->createCommand('
             SELECT patlast, patfirst, patmiddle
             FROM hperson
-         
         ');
-            
-            $remoteData = $remoteQuery->queryOne(); // Fetch a single row
-            
-            // Extract values from the fetched row
-            $remotePatLast = $remoteData['patlast'];
-            $remotePatFirst = $remoteData['patfirst'];
-            $remotePatMiddle = $remoteData['patmiddle'];
-            
-            var_dump($remotePatLast);
-            var_dump($remotePatFirst);
-            var_dump($remotePatMiddle);
-            return $this->render('create', [
-                'model' => $model,
-                'remotePatLast' => $remotePatLast,
-                'remotePatFirst' => $remotePatFirst,
-                'remotePatMiddle' => $remotePatMiddle,
-            ]);
+        
+        $remoteData = $remoteQuery->queryOne(); // Fetch a single row
+        
+        // Extract values from the fetched row
+        $patlast = $remoteData['patlast'];
+        $patfirst = $remoteData['patfirst'];
+        $patmiddle = $remoteData['patmiddle'];
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'brlst_id' => $model->brlst_id]);
+            }
         } else {
-            throw new ForbiddenHttpException;
+            $model->loadDefaultValues();
         }
+        
+        return $this->render('create', [
+            'model' => $model,
+            'patlast' => $patlast,
+            'patfirst' => $patfirst,
+            'patmiddle' => $patmiddle,
+        ]);
+    } else {
+        throw new ForbiddenHttpException;
     }
+}
+
     
     
     
