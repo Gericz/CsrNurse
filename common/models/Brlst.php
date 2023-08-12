@@ -46,7 +46,8 @@ class Brlst extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'brlst_id' => 'ID',
+            'enccode' => 'Hospital No.',
+            //'brlst_id' => 'ID',
             'patient' => 'Patient',
             'dateadmitted' => 'Date Admitted',
             'status' => 'Status',
