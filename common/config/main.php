@@ -9,6 +9,16 @@ return [
         'cache' => [
             'class' => \yii\caching\FileCache::class,
         ],
+        'log' => [
+            'targets' => [
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error', 'info'],
+                    'logFile' => '@runtime/logs/brlst.log', // Path to the log file
+                    'categories' => ['brlst'],
+                ],
+            ],
+        ],
     ],
     
     'modules' => [

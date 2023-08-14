@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\ForbiddenHttpException;
+use common\models\Hperson;
 
 /**
  * BrlstController implements the CRUD actions for Brlst model.
@@ -78,41 +79,35 @@ class DefaultController extends Controller
      * @return string|\yii\web\Response
      */
     public function actionCreate()
-{
-    if (Yii::$app->user->can('create-request')) {
+    {
         $model = new Brlst();
-        
-        // Fetch data from remote columns
-        $remoteConnection = Yii::$app->db2;
-        
-        $remoteQuery = $remoteConnection->createCommand('
-            SELECT hpercode, patlast, patfirst, patmiddle
-            FROM hperson
-        ');
-        
-        $remoteData = $remoteQuery->queryAll(); // Fetch a single row
-        $suggestedData = [];
-        // Extract values from the fetched row
-        foreach ($remoteData as $row) {
-            $suggestedData[] =  $row['patlast'] . ' ' . $row['patfirst'] . ' ' . $row['patmiddle'];
-        }
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'brlst_id' => $model->brlst_id]);
+        $suggestedData = []; // Your code to fetch suggested data
+    
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::debug(Yii::$app->request->post(), 'posted data');
+            $model->patient = Yii::$app->request->post('patient');
+            if ($model->validate()) { // Check for validation errors
+                if ($model->save()) {
+                    Yii::info('Data saved successfully', 'brlst');
+                } else {
+                    Yii::error('Failed to save data: ' . json_encode($model->getErrors()), 'brlst');
+                }
+                return $this->redirect(['index']); // Redirect to a different page after saving
+            } else {
+                Yii::error('Validation failed: ' . json_encode($model->getErrors()), 'brlst');
             }
-        } else {
-            $model->loadDefaultValues();
         }
         
+        // Fetch data for the table
+        $dataFromDatabase = Hperson::find()->select([ 'patlast', 'patfirst', 'patmiddle'])->all();
+    
         return $this->render('create', [
             'model' => $model,
-            'suggestedData'=> $suggestedData,
-            'remoteData' => $remoteData,
+            'suggestedData' => $suggestedData,
+            'dataFromDatabase' => $dataFromDatabase,
         ]);
-    } else {
-        throw new ForbiddenHttpException;
     }
-}
+    
     
 
     /**

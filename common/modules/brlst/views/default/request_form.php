@@ -31,9 +31,10 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
 
     <input list="patients" id="patient" class="form-control" name="patient" placeholder="Type to search...">
     <datalist id="patients">
-        <?php foreach ($suggestedData as $name): ?>
-            <option value="<?= htmlspecialchars($name) ?>">
-        <?php endforeach; ?>
+    <?php foreach ($dataFromDatabase as $hperson): ?>
+    <option value="<?= htmlspecialchars($hperson->patlast . ' ' . $hperson->patfirst . ' ' . $hperson->patmiddle) ?>">
+<?php endforeach; ?>
+
     </datalist>
 
     <?= $form->field($model, 'dateadmitted')->textInput(['maxlength' => true]) ?>
@@ -63,25 +64,27 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
     const patientInput = document.getElementById('patient');
     const enccodeInput = document.getElementById('enccode');
 
-   if (enccodeInput) {
+   if (enccodeInput && patientInput) {
         console.log("enccodeInput found:", enccodeInput);
 
         patientInput.addEventListener('change', function() {
             console.log("Change event triggered");
             const selectedPatient = patientInput.value;
+            console.log("Patient input:", selectedPatient); // Log the patient input value
             const patientNameParts = selectedPatient.split(' ');
 
             // Assuming the order is patlast, patfirst, patmiddle
             const patlast = patientNameParts[0];
             const patfirst = patientNameParts[1];
             const patmiddle = patientNameParts[2];
-
             const url = '<?= Url::to(['default/get-enc-code']) ?>';
             fetch(`${url}&patlast=${patlast}&patfirst=${patfirst}&patmiddle=${patmiddle}`)
                 .then(response => response.text())
                 .then(data => {
                     console.log("Fetched data:", data);
+                    console.log("Fetched data:", selectedPatient);
                     enccodeInput.value = data; // Update the enccode input field
+                    patientInput.value = selectedPatient; // Update the patient input field
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
