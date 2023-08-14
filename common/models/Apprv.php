@@ -33,9 +33,8 @@ class Apprv extends \yii\db\ActiveRecord
     {
         return [
             [['enccode', 'patient', 'dateadmitted', 'status', 'daterequested', 'remarks','linen'], 'required'],
-            [['enccode'], 'integer'],
             [['dateadmitted', 'daterequested', 'dateapproved'], 'safe'],
-            [['patient', 'status','linen', 'remarks'], 'string', 'max' => 255],
+            [['enccode','patient', 'status','linen', 'remarks'], 'string', 'max' => 255],
         ];
     }
 

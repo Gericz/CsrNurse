@@ -33,10 +33,10 @@ class Brlst extends \yii\db\ActiveRecord
     {
         return [
             [['enccode','patient', 'status', 'linen'], 'required'],
-            [['enccode'], 'integer'],
+          
             [['daterequested'], 'default', 'value' => date('Y-m-d H:i:s')],
             [['dateadmitted', 'daterequested'], 'safe'],
-            [['patient', 'status', 'linen', 'remarks'], 'string', 'max' => 255],
+            [['enccode','patient', 'status', 'linen', 'remarks'], 'string', 'max' => 255],
         ];
     }
 
@@ -85,9 +85,8 @@ class Brlst extends \yii\db\ActiveRecord
                 var_dump($apprv->errors);
             }
         }
-        
     }
-
+ 
     
     /*public function behaviors()
     {

@@ -84,17 +84,18 @@ class DefaultController extends Controller
         
         // Fetch data from remote columns
         $remoteConnection = Yii::$app->db2;
+        
         $remoteQuery = $remoteConnection->createCommand('
-            SELECT patlast, patfirst, patmiddle
+            SELECT hpercode, patlast, patfirst, patmiddle
             FROM hperson
         ');
         
-        $remoteData = $remoteQuery->queryOne(); // Fetch a single row
-        
+        $remoteData = $remoteQuery->queryAll(); // Fetch a single row
+        $suggestedData = [];
         // Extract values from the fetched row
-        $patlast = $remoteData['patlast'];
-        $patfirst = $remoteData['patfirst'];
-        $patmiddle = $remoteData['patmiddle'];
+        foreach ($remoteData as $row) {
+            $suggestedData[] =  $row['patlast'] . ' ' . $row['patfirst'] . ' ' . $row['patmiddle'];
+        }
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'brlst_id' => $model->brlst_id]);
@@ -105,17 +106,13 @@ class DefaultController extends Controller
         
         return $this->render('create', [
             'model' => $model,
-            'patlast' => $patlast,
-            'patfirst' => $patfirst,
-            'patmiddle' => $patmiddle,
+            'suggestedData'=> $suggestedData,
+            'remoteData' => $remoteData,
         ]);
     } else {
         throw new ForbiddenHttpException;
     }
 }
-
-    
-    
     
 
     /**
@@ -151,6 +148,29 @@ class DefaultController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionGetEncCode($patlast, $patfirst, $patmiddle)
+{
+    $remoteConnection = Yii::$app->db2;
+    
+    $remoteQuery = $remoteConnection->createCommand('
+        SELECT hpercode
+        FROM hperson
+        WHERE patlast = :patlast AND patfirst = :patfirst AND patmiddle = :patmiddle
+    ', [
+        ':patlast' => $patlast,
+        ':patfirst' => $patfirst,
+        ':patmiddle' => $patmiddle,
+    ]);
+    
+    $hpercode = $remoteQuery->queryScalar(); // Fetch the hpercode value
+    
+    if ($hpercode !== false) {
+        return $hpercode; // Return the hpercode
+    }
+
+    return 'Not found'; // Return a default value or message if not found
+}
 
     /**
      * Finds the Brlst model based on its primary key value.

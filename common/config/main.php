@@ -22,4 +22,5 @@ return [
             'class' => 'common\modules\brlst\brlst',
         ],
     ],
+    
 ];
