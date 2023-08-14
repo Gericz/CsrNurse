@@ -10,6 +10,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\ForbiddenHttpException;
 use common\models\Hperson;
+use common\models\Henctr;
+use yii\helpers\Json;
+
 
 /**
  * BrlstController implements the CRUD actions for Brlst model.
@@ -43,16 +46,16 @@ class DefaultController extends Controller
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Brlst::find(),
-            /*
+            
             'pagination' => [
-                'pageSize' => 50
+                'pageSize' => 15
             ],
             'sort' => [
                 'defaultOrder' => [
-                    'brlst_id' => SORT_DESC,
+                    'daterequested' => SORT_DESC,
                 ]
             ],
-            */
+            
         ]);
 
         return $this->render('index', [
@@ -166,15 +169,21 @@ class DefaultController extends Controller
 
     return 'Not found'; // Return a default value or message if not found
 }
-public function actionGetDateAdmitted($patlast, $patfirst, $patmiddle)
+public function actionGetDateAdmittedOptions($patlast, $patfirst, $patmiddle)
 {
-    $dateAdmitted = Henctr::find()
-        ->select(['dateadmitted'])
+    $hpercode = Hperson::find()
+        ->select(['hpercode'])
         ->where(['patlast' => $patlast, 'patfirst' => $patfirst, 'patmiddle' => $patmiddle])
-        ->scalar();
+        ->scalar(); // Assuming hpercode is a single value
 
-    return $dateAdmitted ? Yii::$app->formatter->asDate($dateAdmitted) : '';
+    $dateAdmittedOptions = Henctr::find()
+        ->select(['encdate'])
+        ->where(['hpercode' => $hpercode])
+        ->column();
+
+    return Json::encode($dateAdmittedOptions);
 }
+
 
 
     /**

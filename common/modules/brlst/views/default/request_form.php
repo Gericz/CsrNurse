@@ -37,7 +37,8 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
 
     </datalist>
 
-    <?= $form->field($model, 'dateadmitted')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'dateadmitted')->dropDownList([], ['id' => 'dateadmitted']) ?>
+
 
    
     <?= $form->field($model, 'status')->dropDownList(
@@ -62,6 +63,7 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
 <script>
     const patientInput = document.getElementById('patient');
     const enccodeInput = document.getElementById('enccode');
+    const dateAdmittedSelect = document.getElementById('dateadmitted');
 
    if (enccodeInput && patientInput) {
         console.log("enccodeInput found:", enccodeInput);
@@ -76,12 +78,29 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
             const patlast = patientNameParts[0];
             const patfirst = patientNameParts[1];
             const patmiddle = patientNameParts[2];
-            const url = '<?= Url::to(['default/get-enc-code']) ?>';
+            // Fetch the dateadmitted options from the henctr table
+            const url = '<?= Url::to(['default/get-date-admitted-options']) ?>';
             fetch(`${url}&patlast=${patlast}&patfirst=${patfirst}&patmiddle=${patmiddle}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched dateadmitted options:", data);
+                    dateAdmittedSelect.innerHTML = ''; // Clear existing options
+                    data.forEach(option => {
+                        const optionElem = document.createElement('option');
+                        optionElem.value = option;
+                        optionElem.textContent = option;
+                        dateAdmittedSelect.appendChild(optionElem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+
+            const encUrl = '<?= Url::to(['default/get-enc-code']) ?>';
+            fetch(`${encUrl}&patlast=${patlast}&patfirst=${patfirst}&patmiddle=${patmiddle}`)
                 .then(response => response.text())
                 .then(data => {
                     console.log("Fetched data:", data);
-                    console.log("Fetched data:", selectedPatient);
                     enccodeInput.value = data; // Update the enccode input field
                     patientInput.value = selectedPatient; // Update the patient input field
                 })

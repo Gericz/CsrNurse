@@ -33,12 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'linen',
             'daterequested',
             'remarks',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Brlst $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'brlst_id' => $model->brlst_id]);
-                 }
-            ],
+          
         ],
     ]); ?>
 

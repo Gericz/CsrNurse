@@ -46,7 +46,7 @@ class Apprv extends \yii\db\ActiveRecord
         return [
             'apprv_id' => 'Approved ID',
             'enccode' => 'Hospital No',
-            'brlst_id' => 'Request ID',
+            //'brlst_id' => 'Request ID',
             'patient' => 'Patient',
             'dateadmitted' => 'Date Admitted',
             'status' => 'Status',
@@ -56,6 +56,38 @@ class Apprv extends \yii\db\ActiveRecord
             'dateapproved' => 'Date Approved',
         ];
     }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        
+        if ($insert) {
+            // Create a new Rtrn record and associate it with the Brlst record
+            $rtrn = new Rtrn();
+            $rtrn->apprv_id = $this->apprv_id; // Assuming there's a foreign key relation
+            // Set other attributes of the Rtrn model as needed
+            $rtrn->enccode = $this->enccode;
+            $rtrn->patient= $this->patient;
+            Yii::info('Value of $this->patient: ' . $this->patient, 'debug');
+            $rtrn->dateadmitted= $this->dateadmitted;
+            $rtrn->status= $this->status;
+            $rtrn->linen= $this->linen;
+            $rtrn->daterequested= $this->daterequested;
+            $rtrn->remarks= $this->remarks;
+            $rtrn->dateapproved= $this->dateapproved;
+            // Debug the  $rtrn object before saving
+            var_dump( $rtrn);
+            
+            if ( $rtrn->save()) {
+                // Debug the $rtrn object after saving
+               
+            } else {
+                // Debug validation errors if save fails
+                var_dump( $rtrn->errors);
+            }
+        }
+    }
+ 
 
     /**
      * {@inheritdoc}

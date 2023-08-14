@@ -1,0 +1,30 @@
+/* web/css/styles.css */
+
+.table-row-blue {
+    background-color: blue; /* Change this to your preferred blue color */
+}
+
+.table-row-green {
+    background-color: green; /* Change this to your preferred green color */
+}
+
+.table-row-orange {
+    background-color: orange; /* Change this to your preferred green color */
+}
+
+/* Default styles for the charts */
+#linenUsageChart,
+#linenColorDistributionChart {
+  width: 100%; /* Make the chart take up the full width */
+  max-width: 800px; /* Set a maximum width to avoid excessive stretching */
+  margin: 0 auto; /* Center the charts horizontally */
+}
+
+/* Responsive styles for smaller screens */
+@media screen and (max-width: 768px) {
+  #linenUsageChart,
+  #linenColorDistributionChart {
+    max-width: 100%; /* Allow the chart to take up the full width on smaller screens */
+    font-size: 12px; /* Reduce font size for better visibility on small screens */
+  }
+}

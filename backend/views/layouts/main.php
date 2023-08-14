@@ -44,8 +44,9 @@ AppAsset::register($this);
     }
     
     if (Yii::$app->user->can('viewApprove')) {
-        $menuItems[] = ['label' => 'Approve', 'url' => ['apprv/default/index']];
+        $menuItems[] = ['label' => 'Issue/Return', 'url' => ['apprv/default/index']];
     }
+    
     
     
     if (Yii::$app->user->isGuest) {

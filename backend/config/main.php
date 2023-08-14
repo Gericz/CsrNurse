@@ -23,6 +23,9 @@ return [
         'brlst' => [
             'class' => 'common\modules\brlst\brlst',
         ],
+        'rtrn' => [
+            'class' => 'common\modules\rtrn\rtrn',
+        ],
     ],
     
     'components' => [

@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\ForbiddenHttpException;
+use common\models\ApprvSearch;
 
 /**
  * ApprvController implements the CRUD actions for Apprv model.
@@ -53,9 +54,11 @@ class ApprvController extends Controller
     
     
     {
+
+        $searchModel = new ApprvSearch();
         $dataProvider = new ActiveDataProvider([
             'query' => Apprv::find(),
-            /*
+            
             'pagination' => [
                 'pageSize' => 50
             ],
@@ -63,11 +66,12 @@ class ApprvController extends Controller
                 'defaultOrder' => [
                     'aprrv_id' => SORT_DESC,
                 ]
-            ],*/
+            ],
             
         ]);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -175,8 +179,8 @@ class ApprvController extends Controller
             if ($apprvModel->save()) {
                 
                 // Delete the corresponding brlist record
-                $brlistModel->delete();
-                Yii::$app->session->setFlash('success', 'Request approved and moved to approvals.');
+                //$brlistModel->delete();
+                Yii::$app->session->setFlash('success', 'Request approved, Please click again for return linen.');
             } else {
                 Yii::error($apprvModel->errors, 'app');
                 Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
