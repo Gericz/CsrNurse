@@ -23,7 +23,7 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
 <div class="brlst-form">
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'enccode')->textInput(['id' => 'enccode', 'maxlength' => true]) ?>
+    <?= $form->field($model, 'enccode')->textInput(['id' => 'enccode', 'maxlength' => true, 'readonly' => true]) ?>
 
 
     <!-- Using the datalist for patient input -->
@@ -49,8 +49,7 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
         ArrayHelper::map(Linen::find()->all(), 'color', 'color'),
         ['prompt' => 'Select Linen']
     ) ?>
-
-<?= $form->field($model, 'daterequested')->textInput(['maxlength' => true]) ?>
+ <?= $form->field($model, 'daterequested')->hiddenInput()->label(false) ?>
 	 <?= $form->field($model, 'remarks')->textInput(['maxlength' => true]) ?>
 	 
 

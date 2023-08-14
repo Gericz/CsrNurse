@@ -166,6 +166,16 @@ class DefaultController extends Controller
 
     return 'Not found'; // Return a default value or message if not found
 }
+public function actionGetDateAdmitted($patlast, $patfirst, $patmiddle)
+{
+    $dateAdmitted = Henctr::find()
+        ->select(['dateadmitted'])
+        ->where(['patlast' => $patlast, 'patfirst' => $patfirst, 'patmiddle' => $patmiddle])
+        ->scalar();
+
+    return $dateAdmitted ? Yii::$app->formatter->asDate($dateAdmitted) : '';
+}
+
 
     /**
      * Finds the Brlst model based on its primary key value.
