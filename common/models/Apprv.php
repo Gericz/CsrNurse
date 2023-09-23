@@ -18,6 +18,7 @@ use Yii;
  */
 class Apprv extends \yii\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
@@ -26,13 +27,14 @@ class Apprv extends \yii\db\ActiveRecord
         return '{{%apprv}}';
     }
 
+    public $is_sent_to_rtrn;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['enccode', 'patient', 'dateadmitted', 'status', 'daterequested', 'remarks','linen'], 'required'],
+            [['enccode', 'patient', 'dateadmitted','daterequested','linen'], 'required'],
             [['dateadmitted', 'daterequested', 'dateapproved'], 'safe'],
             [['enccode','patient', 'status','linen', 'remarks'], 'string', 'max' => 255],
         ];
@@ -66,11 +68,12 @@ class Apprv extends \yii\db\ActiveRecord
             $rtrn = new Rtrn();
             $rtrn->apprv_id = $this->apprv_id; // Assuming there's a foreign key relation
             // Set other attributes of the Rtrn model as needed
+            $rtrn->brlst_id = $this->brlst_id;
             $rtrn->enccode = $this->enccode;
             $rtrn->patient= $this->patient;
             Yii::info('Value of $this->patient: ' . $this->patient, 'debug');
             $rtrn->dateadmitted= $this->dateadmitted;
-            $rtrn->status= $this->status;
+           //$rtrn->status= $this->status;
             $rtrn->linen= $this->linen;
             $rtrn->daterequested= $this->daterequested;
             $rtrn->remarks= $this->remarks;
@@ -97,4 +100,14 @@ class Apprv extends \yii\db\ActiveRecord
     {
         return new ApprvQuery(get_called_class());
     }
+    public function getRtrn()
+{
+    return $this->hasOne(Rtrn::class, ['apprv_id' => 'apprv_id']);
+}
+
+public function getBrlst()
+{
+    return $this->hasOne(Brlst::class, ['brlst_id' => 'brlst_id']);
+}
+
 }

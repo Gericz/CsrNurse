@@ -3,6 +3,7 @@
 namespace common\modules\apprv\controllers;
 
 use common\models\Apprv;
+use common\models\Rtrn;
 use common\models\Brlst;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -41,24 +42,13 @@ class ApprvController extends Controller
      * @return string
      */
     public function actionIndex()
-   /* {
-        // Set up data provider for the GridView with brlist records
-        $dataProvider = new ActiveDataProvider([
-            'query' => Brlst::find(),
-        ]);
-        
-        // Render the view and pass the data provider
-        return $this->render('index', ['dataProvider' => $dataProvider]);
-    }*/
-    
-    
-    
     {
 
         $searchModel = new ApprvSearch();
         $dataProvider = new ActiveDataProvider([
-            'query' => Apprv::find(),
-            
+           //'query' => Apprv::find(),
+            'query'=> Apprv::find()->where(['status' => '0']),
+            /*
             'pagination' => [
                 'pageSize' => 50
             ],
@@ -66,7 +56,7 @@ class ApprvController extends Controller
                 'defaultOrder' => [
                     'aprrv_id' => SORT_DESC,
                 ]
-            ],
+            ],*/
             
         ]);
 
@@ -147,12 +137,13 @@ class ApprvController extends Controller
     
     public function actionSaveEdited($brlst_id)
     {
-       
+        
         if(Yii::$app->user->can('approve-request'))
         {
-            $brlistModel = Brlst::findOne($brlst_id);
+            $brlstModel = Brlst::findOne($brlst_id);
             
-            if (!$brlistModel) {
+            
+            if (!$brlstModel) {
                 throw new NotFoundHttpException('Brlist not found.');
             }
             
@@ -165,34 +156,48 @@ class ApprvController extends Controller
             $apprvModel->enccode = Yii::$app->request->post('Apprv')['enccode'];
             $apprvModel->patient = Yii::$app->request->post('Apprv')['patient'];
             $apprvModel->dateadmitted = Yii::$app->request->post('Apprv')['dateadmitted'];
-            $apprvModel->status = Yii::$app->request->post('Apprv')['status'];
+           //$apprvModel->status = Yii::$app->request->post('Apprv')['status'];
+           
             $apprvModel->linen = Yii::$app->request->post('Apprv')['linen'];
             $apprvModel->daterequested = Yii::$app->request->post('Apprv')['daterequested'];
             $apprvModel->remarks = Yii::$app->request->post('Apprv')['remarks'];
+            $apprvModel->dateapproved = Yii::$app->request->post('Apprv')['dateapproved'];
             
             if (!$apprvModel->validate()) {
                 Yii::error($apprvModel->errors, 'app');
                 Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
             }
             
-            
-            if ($apprvModel->save()) {
+        if ($apprvModel->save()) {
+            $apprvModel->dateapproved = date('Y-m-d H:i:s');  // You can use your preferred date format and logic here
+            // Create and save the Rtrn model with the same data
+            $rtrnModel = new Rtrn();
+            $rtrnModel->attributes = $apprvModel->attributes;
+            unset($rtrnModel->status); // Exclude the 'status' attribute
+        
+            if ($rtrnModel->validate()) {
+                if ($rtrnModel->save()) {
                 
-                // Delete the corresponding brlist record
-                //$brlistModel->delete();
-                Yii::$app->session->setFlash('success', 'Request approved, Please click again for return linen.');
+                    Yii::$app->session->setFlash('success', 'Request approved, Please click again for return linen.');
+                } else {
+                    Yii::error($rtrnModel->errors, 'app');
+                    Yii::$app->session->setFlash('error', 'Error while saving the Rtrn model.');
+                }
             } else {
-                Yii::error($apprvModel->errors, 'app');
-                Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
-                
+                Yii::error($rtrnModel->errors, 'app');
+                Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
             }
-            
-            return $this->redirect(['/apprv/default/index']);
-        }else
-        {
-            Throw new ForbiddenHttpException;
+        } else {
+            Yii::error($apprvModel->errors, 'app');
+            Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
         }
-    }
+                    
+                    return $this->redirect(['/apprv/default/index']);
+                }else
+                {
+                    Throw new ForbiddenHttpException;
+                }
+            }
     
    
     

@@ -1,18 +1,25 @@
 <?php
 
-namespace common\modules\rtrn;
+namespace common\modules\rtrn\controllers;
 
+use Yii;
 use common\models\Rtrn;
+use common\models\Apprv;
+use common\models\Brlst;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
+
+
 
 /**
  * RtrnController implements the CRUD actions for Rtrn model.
  */
 class RtrnController extends Controller
 {
+    
     /**
      * @inheritDoc
      */
@@ -38,8 +45,10 @@ class RtrnController extends Controller
      */
     public function actionIndex()
     {
+       
         $dataProvider = new ActiveDataProvider([
-            'query' => Rtrn::find(),
+            //'query' => Rtrn::find()->where(['status' => 0]), 
+            'query'=> Rtrn::find()->where(['status' => '0']),
             /*
             'pagination' => [
                 'pageSize' => 50
@@ -125,44 +134,49 @@ class RtrnController extends Controller
 
         return $this->redirect(['index']);
     }
+    
     public function actionSaveEdited($apprv_id)
     {
        
         if(Yii::$app->user->can('approve-request'))
         {
             $apprvModel = Apprv::findOne($apprv_id);
+          
             
             if (!$apprvModel) {
                 throw new NotFoundHttpException('Apprv not found.');
             }
             
+       
+
             // Find or create the associated Apprv model based on the foreign key
-            $rtrnModel = Apprv::findOne(['apprv_id' => $apprv_id]) ?? new Apprv();
-            var_dump(Yii::$app->request->post('Apprv'));
+            $rtrnModel = Rtrn::findOne(['apprv_id' => $apprv_id]) ?? new Rtrn();
+            var_dump(Yii::$app->request->post('Rtrn'));
             // Update Apprv model with edited data
             $rtrnModel->attributes = Yii::$app->request->post('Rtrn');
             // Set other attributes like approved_by, approval_date, etc.
             $rtrnModel->enccode = Yii::$app->request->post('Rtrn')['enccode'];
             $rtrnModel->patient = Yii::$app->request->post('Rtrn')['patient'];
             $rtrnModel->dateadmitted = Yii::$app->request->post('Rtrn')['dateadmitted'];
-            $rtrnModel->status = Yii::$app->request->post('Rtrn')['status'];
+            //$rtrnModel->status = Yii::$app->request->post('Rtrn')['status'];
             $rtrnModel->linen = Yii::$app->request->post('Rtrn')['linen'];
             $rtrnModel->daterequested = Yii::$app->request->post('Rtrn')['daterequested'];
             $rtrnModel->remarks = Yii::$app->request->post('Rtrn')['remarks'];
             $rtrnModel->dateapproved = Yii::$app->request->post('Rtrn')['dateapproved'];
-            if (!$apprvModel->validate()) {
-                Yii::error($apprvModel->errors, 'app');
+
+            if (!$rtrnModel->validate()) {
+                Yii::error($rtrnModel->errors, 'app');
                 Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
             }
             
-            
-            if ($apprvModel->save()) {
+            $rtrnModel->datertrned = date('Y-m-d H:i:s');
+            if ($rtrnModel->save()) {
                 
                 // Delete the corresponding brlist record
-                //$brlistModel->delete();
-                Yii::$app->session->setFlash('success', 'Request approved and moved to approvals.');
+                //$brlstModel->delete();
+                Yii::$app->session->setFlash('success', 'Linen returned.');
             } else {
-                Yii::error($apprvModel->errors, 'app');
+                Yii::error($rtrnModel->errors, 'app');
                 Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
                 
             }

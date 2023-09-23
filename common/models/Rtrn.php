@@ -18,7 +18,8 @@ use Yii;
  * @property string $daterequested
  * @property string $remarks
  * @property string $dateapproved
- *
+ * @property string $datertrned
+ * 
  * @property Apprv $apprv
  */
 class Rtrn extends \yii\db\ActiveRecord
@@ -31,15 +32,35 @@ class Rtrn extends \yii\db\ActiveRecord
         return '{{%rtrn}}';
     }
 
+   
+    /*public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if ($this->status == 1) {
+            $rtrnModel = $this->rtrn;
+            if ($rtrnModel) {
+                $rtrnModel->status = 1;
+                $rtrnModel->save(false);
+                
+                $apprvModel = $rtrnModel->apprv;
+                if ( $apprvModel) {
+                    $apprvModel->status = 1;
+                    $apprvModel->save(false);
+                }
+            }
+        }
+    }*/
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['apprv_id', 'brlst_id', 'enccode', 'patient', 'dateadmitted', 'status', 'linen', 'daterequested', 'remarks', 'dateapproved'], 'required'],
+            [['apprv_id', 'brlst_id', 'enccode', 'patient', 'dateadmitted','linen', 'daterequested','dateapproved'], 'required'],
             [['apprv_id', 'brlst_id'], 'integer'],
-            [['dateadmitted', 'daterequested', 'dateapproved'], 'safe'],
+            [['dateadmitted', 'daterequested', 'dateapproved', 'datertrned'], 'safe'],
             [['enccode', 'patient', 'status', 'linen', 'remarks'], 'string', 'max' => 255],
             [['apprv_id'], 'unique'],
             [['apprv_id'], 'exist', 'skipOnError' => true, 'targetClass' => Apprv::class, 'targetAttribute' => ['apprv_id' => 'apprv_id']],
@@ -63,6 +84,7 @@ class Rtrn extends \yii\db\ActiveRecord
             'daterequested' => 'Date Requested',
             'remarks' => 'Remarks',
             'dateapproved' => 'Date Approved',
+            'datertrned'=> 'Date Returned',
         ];
     }
 
@@ -75,4 +97,10 @@ class Rtrn extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Apprv::class, ['apprv_id' => 'apprv_id']);
     }
+    
+    public function getBrlst()
+{
+    return $this->hasOne(Brlst::class, ['brlst_id' => 'brlst_id']);
+}
+
 }

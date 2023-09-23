@@ -81,6 +81,7 @@ class BrlstController extends Controller
     {
         if (Yii::$app->user->can('create-request')) {
             $model = new Brlst();
+            $model->status = 0;
             
             if ($this->request->isPost) {
                 if ($model->load($this->request->post()) && $model->save()) {

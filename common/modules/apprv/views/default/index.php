@@ -17,21 +17,11 @@ $this->title = 'Linen Borrow System';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="apprv-index">
+<link rel="shortcut icon" href="<?= Yii::$app->request->baseUrl; ?>/adphicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="<?= Yii::$app->request->baseUrl ?>/css/styles.css">
 
     <h1><?= Html::encode($this->title) ?></h1>
     
-    <?= Html::a('Go to Reports', ['reports'], ['class' => 'btn btn-primary']) ?>
-<?php $form = ActiveForm::begin([
-    'action' => ['index'],
-    'method' => 'get',
-]); ?>
-
-<?= $form->field($searchModel, 'patient')->textInput(['placeholder' => 'Search Patient Name']) ?>
-<?= Html::a('Reset', ['index'], ['class' => 'btn btn-warning']) ?>
-
-<?php ActiveForm::end(); ?>
-</div>
 
     <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -41,20 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //'brlst_id',
         'patient',
         'dateadmitted',
-        [
-            'attribute' => 'status',
-            'contentOptions' => function ($model) {
-                $options = [];
-                if ($model->status === 'request') {
-                    $options['style'] = 'background-color: blue';
-                } elseif ($model->status === 'approved') {
-                    $options['style'] = 'background-color: green';
-                } elseif ($model->status === 'returned') {
-                    $options['style'] = 'background-color: orange'; // You can set a color for 'returned'
-                }
-                return $options;
-            },
-        ],
+        //'status',
         'linen',
         'daterequested',
         'remarks',
@@ -63,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'template' => '{move-to-apprv}',
             'buttons' => [
                 'move-to-apprv' => function ($url, $model, $key) {
-                    return yii\helpers\Html::a('Issue/Return', '#', [
+                    return yii\helpers\Html::a('Issue', '#', [
                         'class' => 'btn btn-primary',
                         'data-bs-toggle' => 'modal',
                         'data-bs-target' => '#editModal' . $model->apprv_id, // Unique modal ID
@@ -84,7 +61,8 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
     <div>
         <!-- Render your edit form here -->
-        <?= $this->render('_edit_form', ['model' => $model]) ?>
+        <?= $this->render('_edit_form', ['model' => $model
+        ]) ?>
     </div>
     <?php Modal::end(); ?>
 <?php endforeach; ?>

@@ -36,15 +36,19 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
-        
+        ['label' => 'Reports', 'url' => ['apprv/default/reports']],
+
     ];
     
     if (Yii::$app->user->can('viewRequest')) {
-        $menuItems[] = ['label' => 'Request', 'url' => ['brlst/default/index']];
+        $menuItems[] = ['label' => 'Request Linen', 'url' => ['brlst/default/index']];
     }
     
     if (Yii::$app->user->can('viewApprove')) {
-        $menuItems[] = ['label' => 'Issue/Return', 'url' => ['apprv/default/index']];
+        $menuItems[] = ['label' => 'Issue Linen', 'url' => ['apprv/default/index']];
+    }
+    if (Yii::$app->user->can('viewReturn')) {
+        $menuItems[] = ['label' => 'Returned Linen', 'url' => ['rtrn/default/index']];
     }
     
     

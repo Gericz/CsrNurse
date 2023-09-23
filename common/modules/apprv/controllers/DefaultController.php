@@ -56,7 +56,8 @@ class DefaultController extends Controller
     {
        $searchModel = new ApprvSearch();
         $dataProvider = new ActiveDataProvider([
-            'query' => Apprv::find(),
+           // 'query' => Apprv::find(),
+           'query'=> Apprv::find()->where(['status' => '0']),
             
             'pagination' => [
                 'pageSize' => 10
@@ -149,15 +150,67 @@ class DefaultController extends Controller
 
         return $this->redirect(['index']);
     }
-    
-    public function actionSaveEdited($brlst_id)
+    /*
+    public function actionSaveEdited($apprv_id)
     {
        
         if(Yii::$app->user->can('approve-request'))
         {
-            $brlistModel = Brlst::findOne($brlst_id);
+            $apprvModel = Apprv::findOne($apprv_id);
             
-            if (!$brlistModel) {
+            if (!$apprvModel) {
+                throw new NotFoundHttpException('Apprv not found.');
+            }
+            
+            // Find or create the associated Apprv model based on the foreign key
+            $rtrnModel = Apprv::findOne(['apprv_id' => $apprv_id]) ?? new Rtrn();
+            var_dump(Yii::$app->request->post('Rtrn'));
+            // Update Apprv model with edited data
+            $rtrnModel->attributes = Yii::$app->request->post('Rtrn');
+            // Set other attributes like approved_by, approval_date, etc.
+            $rtrnModel->enccode = Yii::$app->request->post('Rtrn')['enccode'];
+            $rtrnModel->patient = Yii::$app->request->post('Rtrn')['patient'];
+            $rtrnModel->dateadmitted = Yii::$app->request->post('Rtrn')['dateadmitted'];
+            //$rtrnModel->status = Yii::$app->request->post('Rtrn')['status'];
+            //$rtrnModel->status = 1; // Set status to 1
+            //$rtrnModel->status = Yii::$app->request->post('Rtrn')['status'];
+            $rtrnModel->linen = Yii::$app->request->post('Rtrn')['linen'];
+            $rtrnModel->daterequested = Yii::$app->request->post('Rtrn')['daterequested'];
+            $rtrnModel->remarks = Yii::$app->request->post('Rtrn')['remarks'];
+            $rtrnModel->dateapproved = Yii::$app->request->post('Rtrn')['dateapproved'];
+            if (!$rtrnModel->validate()) {
+                Yii::error($rtrnModel->errors, 'app');
+                Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
+            }
+            
+            
+            if ($rtrnModel->save()) {
+                // Delete the corresponding brlist record
+                //$brlistModel->delete();
+                Yii::$app->session->setFlash('success', 'Linen returned.');
+            } else {
+                Yii::error($rtrnModel->errors, 'app');
+                Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
+                
+            }
+            
+            return $this->redirect(['/rtrn/default/index']);
+        }else
+        {
+            Throw new ForbiddenHttpException;
+        }
+    }
+    */
+   
+    public function actionSaveEdited($brlst_id)
+    {
+        
+        if(Yii::$app->user->can('approve-request'))
+        {
+            $brlstModel = Brlst::findOne($brlst_id);
+            
+            
+            if (!$brlstModel) {
                 throw new NotFoundHttpException('Brlist not found.');
             }
             
@@ -170,37 +223,50 @@ class DefaultController extends Controller
             $apprvModel->enccode = Yii::$app->request->post('Apprv')['enccode'];
             $apprvModel->patient = Yii::$app->request->post('Apprv')['patient'];
             $apprvModel->dateadmitted = Yii::$app->request->post('Apprv')['dateadmitted'];
-            $apprvModel->status = Yii::$app->request->post('Apprv')['status'];
+           //$apprvModel->status = Yii::$app->request->post('Apprv')['status'];
+           
             $apprvModel->linen = Yii::$app->request->post('Apprv')['linen'];
             $apprvModel->daterequested = Yii::$app->request->post('Apprv')['daterequested'];
             $apprvModel->remarks = Yii::$app->request->post('Apprv')['remarks'];
+            $apprvModel->dateapproved = Yii::$app->request->post('Apprv')['dateapproved'];
             
             if (!$apprvModel->validate()) {
                 Yii::error($apprvModel->errors, 'app');
                 Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
             }
             
-            
-            if ($apprvModel->save()) {
+        if ($apprvModel->save()) {
+            $apprvModel->dateapproved = date('Y-m-d H:i:s');  // You can use your preferred date format and logic here
+            // Create and save the Rtrn model with the same data
+            $rtrnModel = new Rtrn();
+            $rtrnModel->attributes = $apprvModel->attributes;
+        
+            if ($rtrnModel->validate()) {
+                if ($rtrnModel->save()) {
                 
-                // Delete the corresponding brlist record
-                //$brlistModel->delete();
-                Yii::$app->session->setFlash('success', 'Request approved and moved to approvals.');
+                    Yii::$app->session->setFlash('success', 'Request approved, Please click again for return linen.');
+                } else {
+                    Yii::error($rtrnModel->errors, 'app');
+                    Yii::$app->session->setFlash('error', 'Error while saving the Rtrn model.');
+                }
             } else {
-                Yii::error($apprvModel->errors, 'app');
-                Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
-                
+                Yii::error($rtrnModel->errors, 'app');
+                Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
             }
-            
-            return $this->redirect(['index']);
-        }else
-        {
-            Throw new ForbiddenHttpException;
+        } else {
+            Yii::error($apprvModel->errors, 'app');
+            Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
         }
-    }
+                    
+                    return $this->redirect(['/apprv/default/index']);
+                }else
+                {
+                    Throw new ForbiddenHttpException;
+                }
+            }
     
-   
-    
+
+
     /**
      * Finds the Apprv model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

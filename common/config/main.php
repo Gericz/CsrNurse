@@ -14,7 +14,7 @@ return [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'info'],
-                    'logFile' => '@runtime/logs/brlst.log', // Path to the log file
+                    'logFile' => '@app/runtime/logs/brlst.log', // Path to the log file
                     'categories' => ['brlst'],
                 ],
             ],

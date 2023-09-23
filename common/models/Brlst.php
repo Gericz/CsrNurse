@@ -32,8 +32,8 @@ class Brlst extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['enccode','patient', 'status', 'linen'], 'required'],
-          
+            [['enccode','patient','linen'], 'required'],
+            
             [['daterequested'], 'default', 'value' => date('Y-m-d H:i:s')],
             [['dateadmitted', 'daterequested'], 'safe'],
             [['enccode','patient', 'status', 'linen', 'remarks'], 'string', 'max' => 255],
@@ -57,6 +57,20 @@ class Brlst extends \yii\db\ActiveRecord
             
         ];
     }
+
+    public function getApprv()
+    {
+        return $this->hasOne(Apprv::class, ['brlst_id' => 'apprv_id']);
+    }
+    public function getRtrn()
+    {
+        return $this->hasOne(Rtrn::class, ['brlst_id' => 'brlst_id']);
+    }
+
+    public function getHadmlog()
+{
+    return $this->hasOne(Hadmlog::class, ['enccode' => 'enccode']);
+}
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
@@ -70,7 +84,7 @@ class Brlst extends \yii\db\ActiveRecord
             $apprv->patient= $this->patient;
             Yii::info('Value of $this->patient: ' . $this->patient, 'debug');
             $apprv->dateadmitted= $this->dateadmitted;
-            $apprv->status= $this->status;
+            //$apprv->status= $this->status;
             $apprv->linen= $this->linen;
             $apprv->daterequested= $this->daterequested;
             $apprv->remarks= $this->remarks;

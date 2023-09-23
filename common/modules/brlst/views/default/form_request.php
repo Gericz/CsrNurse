@@ -12,39 +12,26 @@ use common\models\Linen;
 /* @var $form yii\widgets\ActiveForm */
 
 $this->title = 'Nurse Request';
+$this->params['breadcrumbs'][] = ['label' => 'Nurse Request', 'url' => ['index']]; // Update breadcrumb as needed
 $this->params['breadcrumbs'][] = $this->title;
 
 
 ?>
 <div class="brlst-form">
-    <?php $form = ActiveForm::begin(); ?>
+<h1><?= Html::encode($this->title) ?></h1>
 
-    <!-- Your form fields here -->
+<?php $form = ActiveForm::begin(); ?>
 
-    <?php ActiveForm::end(); ?>
+<?= $form->field($model, 'enccode')->textInput(['maxlength' => true]) ?>
 
-    <div class="table-container">
-        <h2>Table of Data</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ENCode</th>
-                    <th>PATLast</th>
-                    <th>PATFirst</th>
-                    <th>PATMiddle</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($dataFromDatabase as $row): ?>
-                    <tr>
-                        
-                        <td><?= $row['hpercode'] ?></td>
-                        <td><?= $row['patlast'] ?></td>
-                        <td><?= $row['patfirst'] ?></td>
-                        <td><?= $row['patmiddle'] ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+<?= $form->field($model, 'patient')->textInput(['maxlength' => true]) ?>
+
+<!-- Add more form fields as needed -->
+
+<div class="form-group">
+    <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+</div>
+
+<?php ActiveForm::end(); ?>
+
 </div>

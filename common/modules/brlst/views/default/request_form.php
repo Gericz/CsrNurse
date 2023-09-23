@@ -41,10 +41,7 @@ $statusNames = ArrayHelper::map($statusList, 'name', 'name');
 
 
    
-    <?= $form->field($model, 'status')->dropDownList(
-    $statusNames,
-    ['prompt' => 'Select Status']
-) ?>
+    <?= $form->field($model, 'status')->hiddenInput(['value' => 1 ])->label(false) ?>
 
     <?= $form->field($model, 'linen')->dropDownList(
         ArrayHelper::map(Linen::find()->all(), 'color', 'color'),

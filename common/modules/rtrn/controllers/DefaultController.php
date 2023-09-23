@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 
 /**
  * Default controller for the `rtrn` module
@@ -39,8 +40,10 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+        $url = Url::to(['/rtrn/index']);
         $dataProvider = new ActiveDataProvider([
-            'query' => Rtrn::find(),
+            //'query' => Rtrn::find(),
+            'query'=> Rtrn::find()->where(['status' => '0']),
             /*
             'pagination' => [
                 'pageSize' => 50
@@ -141,33 +144,30 @@ class DefaultController extends Controller
             $rtrnModel = Apprv::findOne(['apprv_id' => $apprv_id]) ?? new Apprv();
             var_dump(Yii::$app->request->post('Rtrn'));
             // Update Rtrn model with edited data
-            $rtrnModel->attributes = Yii::$app->request->post('Rtrn');
-            // Set other attributes like approved_by, approval_date, etc.
-            $rtrnModel->brlst_id = Yii::$app->request->post('Rtrn')['brlst_id'];
-            $rtrnModel->enccode = Yii::$app->request->post('Rtrn')['enccode'];
-            $rtrnModel->patient = Yii::$app->request->post('Rtrn')['patient'];
-            $rtrnModel->dateadmitted = Yii::$app->request->post('Rtrn')['dateadmitted'];
-            $rtrnModel->status = Yii::$app->request->post('Rtrn')['status'];
-            $rtrnModel->linen = Yii::$app->request->post('Rtrn')['linen'];
-            $rtrnModel->daterequested = Yii::$app->request->post('Rtrn')['daterequested'];
-            $rtrnModel->remarks = Yii::$app->request->post('Rtrn')['remarks'];
-            $rtrnModel->dateapproved = Yii::$app->request->post('Rtrn')['dateapproved'];
-            if (!$apprvModel->validate()) {
-                Yii::error($apprvModel->errors, 'app');
-                Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
-            }
             
-            
-            if ($apprvModel->save()) {
-                
-                // Delete the corresponding brlist record
-                //$brlistModel->delete();
-                Yii::$app->session->setFlash('success', 'Request approved and moved to approvals.');
-            } else {
-                Yii::error($apprvModel->errors, 'app');
-                Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
-                
-            }
+// Set the status attribute to 1
+$rtrnModel->status = 1;
+
+// Set other attributes like approved_by, approval_date, etc.
+$rtrnModel->enccode = Yii::$app->request->post('Rtrn')['enccode'];
+$rtrnModel->patient = Yii::$app->request->post('Rtrn')['patient'];
+$rtrnModel->dateadmitted = Yii::$app->request->post('Rtrn')['dateadmitted'];
+$rtrnModel->linen = Yii::$app->request->post('Rtrn')['linen'];
+$rtrnModel->daterequested = Yii::$app->request->post('Rtrn')['daterequested'];
+$rtrnModel->remarks = Yii::$app->request->post('Rtrn')['remarks'];
+$rtrnModel->dateapproved = Yii::$app->request->post('Rtrn')['dateapproved'];
+
+if (!$rtrnModel->validate()) {
+    Yii::error($rtrnModel->errors, 'app');
+    Yii::$app->session->setFlash('error', 'Validation errors occurred while saving.');
+}
+
+if ($rtrnModel->save()) {
+    Yii::$app->session->setFlash('success', 'Linen returned, and status set to 1.');
+} else {
+    Yii::error($rtrnModel->errors, 'app');
+    Yii::$app->session->setFlash('error', 'Error while saving the edited data.');
+}
             
             return $this->redirect(['/rtrn/default/index']);
         }else

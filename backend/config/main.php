@@ -12,6 +12,8 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
+    //'defaultRoute' => 'apprv/index',
+
     'modules' => [
         'gii' => [
             'class' => 'yii\gii\Module',
@@ -60,13 +62,15 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
-        'urlManager' => [
+        
+       /* 'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'site'=> 'site/index',
+                'site'=> '/site',
+                'rtrn/index' => 'rtrn/index',
                 'apprv/default/index' => 'apprv/default/index',
+                'brlst/controllers/action'=> 'brlst/controllers/action',
             ],
         ],*/
          
