@@ -137,7 +137,7 @@ class DefaultController extends Controller
     ->leftJoin('hadmlog', 'hperson.hpercode = hadmlog.hpercode')
     ->andWhere(['hadmlog.disdate' => null, 'hadmlog.distime' => null])
     ->andWhere(['not', ['hadmlog.hpercode' => null]])
-    ->andWhere(['REGEXP', 'hperson.patfirst', '.*[[:space:]].*']) // Match names with spaces
+    //->andWhere(['REGEXP', 'hperson.patfirst', '.*[[:space:]].*']) // Match names with spaces
     ->all();
     
         return $this->render('create', [

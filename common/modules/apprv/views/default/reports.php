@@ -31,16 +31,12 @@ $returnedCount = Rtrn::find()->where(['status' => 1])->count(); // Returned line
 
 // Calculate the available linen count
 $availableLinen = $totalLinen - ($issuedCount - $returnedCount) ;
+$requestedCount1 = $requestedCount - $issuedCount;
+$issuedCount1 = $issuedCount - $returnedCount;
 
-// Output the result
-
-echo "Linen Requested: $requestedCount<br>";
-echo "Linen Issued: $issuedCount<br>";
-echo "Linen Returned: $returnedCount<br>";
-echo "Available Linen: $availableLinen<br>";
 
 // Sample data for linen usage over time
-$linenColors = ['Green', 'Blue', 'Red', 'Pink'];
+$linenColors = ['Pink', 'Pink', 'Yellow', 'White'];
 // Fetch and count data based on linen color
 $usageData = Apprv::find()
     ->select(['linen', 'COUNT(*) AS count'])
@@ -58,6 +54,33 @@ foreach ($usageData as $entry) {
     $usageCounts[] = $entry['count'];
 }
 ?>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Linen Requested</td>
+            <td><?= $requestedCount1 ?></td>
+        </tr>
+        <tr>
+            <td>Linen Issued</td>
+            <td><?= $issuedCount ?></td>
+        </tr>
+        <tr>
+            <td>Linen Returned</td>
+            <td><?= $returnedCount ?></td>
+        </tr>
+        <tr>
+            <td>Available Linen</td>
+            <td><?= $availableLinen ?></td>
+        </tr>
+    </tbody>
+</table>
+
 
 <script>
 // Sample data for linen usage over time
@@ -66,7 +89,7 @@ const usageData = {
     datasets: [{
         label: 'Linen Usage',
         data: <?= json_encode($usageCounts) ?>,
-        backgroundColor: ['green', 'blue', 'red', 'pink'], // Set colors based on linen colors
+        backgroundColor: ['green', 'pink', 'yellow', 'white'], // Set colors based on linen colors
     }],
 };
 

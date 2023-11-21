@@ -15,8 +15,21 @@ use yii\widgets\ActiveForm;
 
 $this->title = 'Linen Borrow System';
 $this->params['breadcrumbs'][] = $this->title;
+
+
+if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ==='on' ) {
+    $url="https://";
+ }else{
+    $url="http://";
+    $url.=$_SERVER['HTTP_HOST'];
+    $url.=$_SERVER['REQUEST_URI'];
+    $url;
+ }
+ $page=$url;
+ $sec="5";
 ?>
 <div class="apprv-index">
+<meta http-equiv="refresh" content="<?php echo $sec; ?>" URL="<?php echo $page; ?>">
 <link rel="shortcut icon" href="<?= Yii::$app->request->baseUrl; ?>/adphicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="<?= Yii::$app->request->baseUrl ?>/css/styles.css">
 
